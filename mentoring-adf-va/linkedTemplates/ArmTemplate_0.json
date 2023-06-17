@@ -22,10 +22,6 @@
 		"LS_ABLB_Azurementoringstorageva_properties_typeProperties_sasUri_secretName": {
 			"type": "string",
 			"defaultValue": "sas-url-movies"
-		},
-		"LS_ADLS_AzurementoringstoragevaOnline_properties_typeProperties_sasUri_secretName": {
-			"type": "string",
-			"defaultValue": "sas-url-online"
 		}
 	},
 	"variables": {
@@ -55,6 +51,31 @@
 				},
 				"annotations": [],
 				"lastPublishTime": "2023-06-08T20:30:48Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_NEW')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "RaiseFail",
+						"type": "Fail",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"message": "Error",
+							"errorCode": "404"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
 			},
 			"dependsOn": []
 		},
@@ -553,28 +574,6 @@
 							"type": "LinkedServiceReference"
 						},
 						"secretName": "[parameters('LS_ABLB_Azurementoringstorageva_properties_typeProperties_sasUri_secretName')]"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_AKV_Mentoring_key_vault_va')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LS_ADLS_AzurementoringstoragevaOnline')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"sasUri": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "LS_AKV_Mentoring_key_vault_va",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "[parameters('LS_ADLS_AzurementoringstoragevaOnline_properties_typeProperties_sasUri_secretName')]"
 					}
 				}
 			},

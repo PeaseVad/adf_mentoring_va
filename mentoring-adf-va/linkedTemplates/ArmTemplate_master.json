@@ -80,9 +80,6 @@
 					},
 					"LS_ABLB_Azurementoringstorageva_properties_typeProperties_sasUri_secretName": {
 						"value": "[parameters('LS_ABLB_Azurementoringstorageva_properties_typeProperties_sasUri_secretName')]"
-					},
-					"LS_ADLS_AzurementoringstoragevaOnline_properties_typeProperties_sasUri_secretName": {
-						"value": "[parameters('LS_ADLS_AzurementoringstoragevaOnline_properties_typeProperties_sasUri_secretName')]"
 					}
 				}
 			},
@@ -110,6 +107,9 @@
 					},
 					"LS_SQL_CinemaTickets_connectionString": {
 						"value": "[parameters('LS_SQL_CinemaTickets_connectionString')]"
+					},
+					"LS_ADLS_AzurementoringstoragevaOnline_properties_typeProperties_sasUri_secretName": {
+						"value": "[parameters('LS_ADLS_AzurementoringstoragevaOnline_properties_typeProperties_sasUri_secretName')]"
 					}
 				}
 			},
@@ -135,6 +135,26 @@
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Resources/deployments', 'mentoring-adf-va_ArmTemplate_1')]"
+			]
+		},
+		{
+			"name": "mentoring-adf-va_ArmTemplate_3",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_3.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'mentoring-adf-va_ArmTemplate_2')]"
 			]
 		}
 	]

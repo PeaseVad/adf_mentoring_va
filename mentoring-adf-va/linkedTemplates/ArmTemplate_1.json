@@ -21,12 +21,36 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_SQL_CinemaTickets'",
 			"defaultValue": "Integrated Security=False;Data Source=EPUAKYIW1670\\MSSQLSERVER2022;Initial Catalog=CinemaTickets;User ID=sa"
+		},
+		"LS_ADLS_AzurementoringstoragevaOnline_properties_typeProperties_sasUri_secretName": {
+			"type": "string",
+			"defaultValue": "sas-url-online"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ADLS_AzurementoringstoragevaOnline')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"sasUri": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "LS_AKV_Mentoring_key_vault_va",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "[parameters('LS_ADLS_AzurementoringstoragevaOnline_properties_typeProperties_sasUri_secretName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/LS_ASQL_DataMart')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
@@ -332,7 +356,9 @@
 					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADLS_AzurementoringstoragevaOnline')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/DS_ASQL_CinemaTickets')]",
@@ -920,62 +946,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LS_ASQL_MoviesDB')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_SQL_CinemaTickets')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_SQL_CinemaTickets",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "CinemaCode",
-						"type": "nvarchar"
-					},
-					{
-						"name": "CinemaName",
-						"type": "nvarchar"
-					},
-					{
-						"name": "MovieId",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "TicketCount",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "TicketPrice",
-						"type": "decimal",
-						"precision": 4,
-						"scale": 1
-					},
-					{
-						"name": "TransactionId",
-						"type": "nvarchar"
-					},
-					{
-						"name": "TransactionDt",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Tickets"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_SQL_CinemaTickets')]"
 			]
 		}
 	]
