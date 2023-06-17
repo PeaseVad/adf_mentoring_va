@@ -1,0 +1,17 @@
+{
+	"name": "mentoring-adf-va",
+	"properties": {
+		"globalParameters": {
+			"key_vault_url": {
+				"type": "string",
+				"value": "https://mentoring-key-vault-va.vault.azure.net/secrets/logic-app-url"
+			}
+		}
+	},
+	"location": "francecentral",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "176f9495-2df5-467e-8009-0ab0f4fe88f1",
+		"tenantId": "b41b72d0-4e9f-4c26-8a69-f949f367c91d"
+	}
+}

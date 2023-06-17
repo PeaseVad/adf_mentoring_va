@@ -1,0 +1,63 @@
+{
+	"name": "PL_Master",
+	"properties": {
+		"activities": [
+			{
+				"name": "EP_CP_To_ADLS_Movies",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_DATA_DS_ABLB_Movies_To_DS_ADLS_Movies",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "EP_CP_To_SQL_Movies",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "EP_CP_To_ADLS_Movies",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_DATA_DS_ADLS_Movies_DS_SQL_Movies",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "EP_CP_To_Arch",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "EP_CP_To_SQL_Movies",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_DATA_DS_ADLS_SrcMoviesArch_DS_ADLS_MoviesArch",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-06-15T14:49:40Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,30 @@
+{
+	"name": "DS_SQL_MetadataADF",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ASQL_MoviesDB",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "SourceFile",
+				"type": "nvarchar"
+			},
+			{
+				"name": "TargetTable",
+				"type": "nvarchar"
+			},
+			{
+				"name": "isActive",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Metadata_ADF"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

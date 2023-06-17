@@ -1,0 +1,169 @@
+{
+	"name": "PL_DATA_DS_ABLB_Online_To_DS_ADLS_Online",
+	"properties": {
+		"activities": [
+			{
+				"name": "CP_DATA_DS_ABLB_Online_To_DS_ADLS_Movies",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "LKP_SQL_WaterMark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"modifiedDatetimeStart": {
+								"value": "@{activity('LKP_SQL_WaterMark').output.firstRow.OldWatermarkValue}",
+								"type": "Expression"
+							},
+							"modifiedDatetimeEnd": {
+								"value": "@variables('CurentDate')",
+								"type": "Expression"
+							},
+							"deleteFilesAfterCompletion": false
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_ABLB_Online",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_ADLS_LakeOnline",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "LKP_SQL_WaterMark",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "ACT_GEN_SETVAR_CurentDate",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "SELECT WatermarkValue as OldWatermarkvalue FROM [dbo].[WatermarkTable]\nwhere TableName ='OnlineSrc'",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_ASQL_WatermarkTable",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "ACT_GEN_SETVAR_CurentDate",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "CurentDate",
+					"value": {
+						"value": "@utcnow()",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "SP_UpdateWatermark",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "CP_DATA_DS_ABLB_Online_To_DS_ADLS_Movies",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[usp_write_watermark]",
+					"storedProcedureParameters": {
+						"LastModifiedtime": {
+							"value": {
+								"value": "@variables('CurentDate')",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"TableName": {
+							"value": "OnlineSrc",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_ASQL_MoviesDB",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"variables": {
+			"CurentDate": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-05-14T17:05:50Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

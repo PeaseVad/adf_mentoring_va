@@ -1,0 +1,19 @@
+{
+	"name": "DS_ADLS_Ratings",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ADLS_Azurementoringdatalakeva",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "raitings",
+				"fileSystem": "raw"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

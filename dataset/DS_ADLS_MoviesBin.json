@@ -1,0 +1,28 @@
+{
+	"name": "DS_ADLS_MoviesBin",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ADLS_Azurementoringdatalakeva",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"fileName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().fileName",
+					"type": "Expression"
+				},
+				"folderPath": "movies",
+				"fileSystem": "raw"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

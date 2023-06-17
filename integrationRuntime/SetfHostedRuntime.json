@@ -1,0 +1,6 @@
+{
+	"name": "SetfHostedRuntime",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}

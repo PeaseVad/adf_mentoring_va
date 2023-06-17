@@ -1,0 +1,63 @@
+{
+	"name": "PL_Master_Online",
+	"properties": {
+		"activities": [
+			{
+				"name": "EP_CP_Src_To_Lake_Online",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_DATA_DS_ABLB_Online_To_DS_ADLS_Online",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "EP_CP_Lake_To_ASQL_Online",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "EP_CP_Src_To_Lake_Online",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_DATA_DS_ADLS_Online_To_DS_ASQL_Online",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "EP_CP_Lake_To_Arch",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "EP_CP_Lake_To_ASQL_Online",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_DATA_DS_OnlineBin_DS_OnlineArchBin",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-05-13T20:21:17Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

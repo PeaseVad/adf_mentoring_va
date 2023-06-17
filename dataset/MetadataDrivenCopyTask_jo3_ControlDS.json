@@ -1,0 +1,20 @@
+{
+	"name": "MetadataDrivenCopyTask_jo3_ControlDS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ASQL_MoviesDB",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "MetadataDrivenCopyTask_jo3_20230529"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "MainControlTable_jo3"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

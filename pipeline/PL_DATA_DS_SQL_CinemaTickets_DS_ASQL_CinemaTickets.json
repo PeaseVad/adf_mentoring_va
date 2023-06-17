@@ -1,0 +1,261 @@
+{
+	"name": "PL_DATA_DS_SQL_CinemaTickets_DS_ASQL_CinemaTickets",
+	"properties": {
+		"activities": [
+			{
+				"name": "LookupOldWaterMarkActivity",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT WatermarkValue as OldWatermarkvalue FROM [dbo].[WatermarkTable]\nwhere TableName ='Tickets'",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_ASQL_WatermarkTable",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "LookupNewWaterMarkActivity",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "select MAX([TransactionDt]) as NewWatermarkvalue from [dbo].[Tickets]",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_SQL_CinemaTickets",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "CP_IncrementalTicketsLoad",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "LookupOldWaterMarkActivity",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "LookupNewWaterMarkActivity",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "select * from  [dbo].[Tickets] where [TransactionDt] > '@{activity('LookupOldWaterMarkActivity').output.firstRow.OldWatermarkValue}' and [TransactionDt] <= '@{activity('LookupNewWaterMarkActivity').output.firstRow.NewWatermarkvalue}'",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": {
+							"value": "truncate table [stg].[cinema_tickets];",
+							"type": "Expression"
+						},
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "CinemaCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "cinema_code",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CinemaName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "cinema_name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "MovieId",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "movie_id",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "TicketCount",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "ticket_count",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "TicketPrice",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 1,
+									"precision": 4
+								},
+								"sink": {
+									"name": "ticket_price",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 1,
+									"precision": 4
+								}
+							},
+							{
+								"source": {
+									"name": "TransactionId",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "transaction_id",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TransactionDt",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								},
+								"sink": {
+									"name": "transaction_date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_SQL_CinemaTickets",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_ASQL_CinemaTickets",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "SP_LOAD_Tickets",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "CP_IncrementalTicketsLoad",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spPopulateAllCinemaTbl]",
+					"storedProcedureParameters": {
+						"LastModifiedtime": {
+							"value": {
+								"value": "@{activity('LookupNewWaterMarkActivity').output.firstRow.NewWatermarkvalue}",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"TableName": {
+							"value": {
+								"value": "Tickets",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_ASQL_MoviesDB",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-05-08T06:15:54Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

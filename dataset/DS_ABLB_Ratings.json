@@ -1,0 +1,18 @@
+{
+	"name": "DS_ABLB_Ratings",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ABLB_Azurementoringauva",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "module-04"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

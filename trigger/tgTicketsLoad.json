@@ -1,0 +1,32 @@
+{
+	"name": "tgTicketsLoad",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "PL_DATA_DS_SQL_CinemaTickets_DS_ASQL_CinemaTickets",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2023-05-08T06:26:00Z",
+				"timeZone": "UTC",
+				"schedule": {
+					"minutes": [
+						30
+					],
+					"hours": [
+						6
+					]
+				}
+			}
+		}
+	}
+}
