@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "mentoring-adf-va"
+		},
+		"LS_ABLB_Azurementoringauva_connectionString": {
+			"value": ""
+		},
+		"LS_ASQL_DataMart_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=azure-mentoring-va.database.windows.net;Initial Catalog=DataMart;User ID=pasevad"
+		},
+		"LS_ASQL_MoviesDB_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=azure-mentoring-va.database.windows.net;Initial Catalog=movies;User ID=pasevad@azure-mentoring-va"
+		},
+		"LS_SQL_CinemaTickets_connectionString": {
+			"value": "Integrated Security=False;Data Source=EPUAKYIW1670\\MSSQLSERVER2022;Initial Catalog=CinemaTickets;User ID=sa"
+		},
+		"LS_ABLB_Azurementoringstorageva_properties_typeProperties_sasUri_secretName": {
+			"value": "sas-url-movies"
+		},
+		"LS_ADLS_Azurementoringdatalakeva_properties_typeProperties_url": {
+			"value": "https://azurementoringdatalakeva.dfs.core.windows.net"
+		},
+		"LS_ADLS_AzurementoringstoragevaOnline_properties_typeProperties_sasUri_secretName": {
+			"value": "sas-url-online"
+		},
+		"LS_AKV_Mentoring_key_vault_va_properties_typeProperties_baseUrl": {
+			"value": "https://mentoring-key-vault-va.vault.azure.net/"
+		}
+	}
+}

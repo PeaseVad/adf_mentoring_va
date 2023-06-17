@@ -1,0 +1,6 @@
+{
+	"key_vault_url": {
+		"type": "string",
+		"value": "https://mentoring-key-vault-va.vault.azure.net/secrets/logic-app-url"
+	}
+}
